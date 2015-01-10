@@ -134,7 +134,7 @@ public class BookIndexer61687 implements BookIndexer {
 	}
 
 	private boolean containsWord(String line, String keyword) {
-		Pattern p = Pattern.compile("(\\s|^)"+keyword+"(\\s|$|\\.|\\,|\\!|\\?|\\;)");
+		Pattern p = Pattern.compile("(\\s|^)"+keyword+"(\\s|$|\\.|\\,|\\!|\\?|\\;|\\:)");
 		Matcher matcher = p.matcher(line);
 		if(matcher.find()) {
 			return true;
