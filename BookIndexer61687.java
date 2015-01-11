@@ -16,15 +16,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BookIndexer61687 implements BookIndexer {
-	public final Pattern pat = Pattern.compile("^=== page (\\d+) ===$");
-	private int page;
-	private TreeMap<String, ArrayList<Integer>> map = new TreeMap<String, ArrayList<Integer>>();		
-	private Stack<Integer> stackOfPages = new Stack<Integer>();
-	private ArrayList<Integer> targetList = new ArrayList<Integer>();
+	public final static Pattern pat = Pattern.compile("^=== page (\\d+) ===$");
 	
-	@Override
 	public void buildIndex(String bookFilePath, String[] keywords, String indexFilePath) {	
 		try {
+			int page;
+			TreeMap<String, ArrayList<Integer>> map = new TreeMap<String, ArrayList<Integer>>();		
+			Stack<Integer> stackOfPages = new Stack<Integer>();
+			ArrayList<Integer> targetList = new ArrayList<Integer>();
 			List<String> lines = Files.readAllLines(Paths.get(bookFilePath), Charset.defaultCharset());
 			            for (String line : lines) {
 			                line = line.toLowerCase();
@@ -34,10 +33,9 @@ public class BookIndexer61687 implements BookIndexer {
 			        			stackOfPages.add(page);
 			        		}
 			        		
-			        		if (page == 0) {
+			        		if (page == 0 && !(line.isEmpty())) {
 				                for(int i = 0; i < keywords.length; i++) {
 				                	targetList = new ArrayList<Integer>();
-				                	if (!(line.isEmpty())) {
 					                	if(containsWord(line,keywords[i])) {
 					                		if (map.get(keywords[i]) != null) {
 					                			targetList = map.get(keywords[i]);
@@ -51,7 +49,7 @@ public class BookIndexer61687 implements BookIndexer {
 						                    map.put(keywords[i], targetList);
 						                    targetList = new ArrayList<Integer>();
 					                    }
-				                	}
+				                	
 				                }
 				                
 			        		}
@@ -82,12 +80,12 @@ public class BookIndexer61687 implements BookIndexer {
 	     return result;
 	}
 		
-	private String printPages(TreeMap<String, ArrayList<Integer>> map, String[] keywords,String indexFilePath) {
+	private void printPages(TreeMap<String, ArrayList<Integer>> map, String[] keywords,String indexFilePath) {
 		Arrays.sort(keywords);
 		String result = "INDEX\r\n";
 		String pages = "";
 		int counter;
-		for(int i = 0; i < map.size(); i++) {
+		for(int i = 0; i < keywords.length; i++) {
 			counter = 0;
 			keywords[i].toLowerCase();
 			ArrayList<Integer> listOfPages = map.get(keywords[i]);
@@ -113,10 +111,10 @@ public class BookIndexer61687 implements BookIndexer {
 							}
 						}
 					}
+					result = result + keywords[i] + pages + "\r\n";
+					pages = "";
 				}
-					
-				result = result + keywords[i] + pages + "\r\n";
-				pages = "";
+				
 		}
 			
 		Writer writer = null;
@@ -130,7 +128,6 @@ public class BookIndexer61687 implements BookIndexer {
 			   } catch (Exception ex) {}
 			}
 	
-		return result;
 	}
 
 	private boolean containsWord(String line, String keyword) {
